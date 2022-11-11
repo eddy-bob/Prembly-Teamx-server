@@ -12,9 +12,9 @@ interface AuthInterface {
 class Auth implements AuthInterface {
   constructor(private readonly entity: any) {}
 
-  async register(): Promise<any> {}
+  public async register(): Promise<any> {}
 
-  async login(): Promise<any> {}
+  public async login(): Promise<any> {}
 }
 
 export default new Auth(UserEntity);
