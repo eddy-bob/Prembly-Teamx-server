@@ -1,12 +1,12 @@
-
-export interface customErrorInterface { statusCode?: number, name?: string, message: string }
-export class customError extends Error implements customErrorInterface {
-       statusCode: number;
-       name: string;
-       constructor(message?: string, statusCode?: number, name?: string) {
-              super(message);
-              this.statusCode = statusCode as number,
-                     this.name = name as string,
-                     Object.setPrototypeOf(this, customError.prototype)
-       }
-};
+export interface customErrorInterface {
+  statusCode: number;
+  message: string;
+}
+export default class customError extends Error implements customErrorInterface {
+  statusCode: number;
+  constructor(message?: string, statusCode?: number) {
+    super(message);
+    this.statusCode = statusCode as number;
+    Object.setPrototypeOf(this, customError.prototype);
+  }
+}
