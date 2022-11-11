@@ -8,6 +8,7 @@
     "tsc": "tsc",
     "start": "node ./dist/server.js",
     "postinstall": "yarn build",
+    "create-keys": "yarn build  && node ./dist/generate_keys.js",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "dev": "ts-node-dev --respawn --transpile-only  ./src/server.ts"
