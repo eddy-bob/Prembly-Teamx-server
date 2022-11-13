@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
     "start": "node ./dist/server.js",
-    "postinstall": "yarn build",
+    "postinstall": "yarn create-keys",
     "create-keys": "yarn build  && node ./dist/generate_keys.js",
     "build": "tsc",
     "lint": "eslint . --ext .ts",

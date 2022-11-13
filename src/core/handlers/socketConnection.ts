@@ -1,5 +1,4 @@
 import User from "../../model/User";
-import { validateToken } from "../../api/validateToken";
 import { ObjectId } from "mongoose";
 
 import chat from "../../controllers/chat.controller";
