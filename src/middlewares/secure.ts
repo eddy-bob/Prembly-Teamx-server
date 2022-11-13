@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { customError } from "../helpers/customError";
+import  customError  from "../helpers/customError";
 import { validateToken } from "../api/validateToken";
 
 import User from "../model/User";

@@ -1,7 +1,15 @@
 import { Router } from "express";
-import authRouter from "./sub-routers/auth-router";
-import userRouter from "./sub-routers/user-router";
+import authRouter from "./sub-routers/auth.router";
+import userRouter from "./sub-routers/user.router";
+import chatRouter from "./sub-routers/chat.router";
+import agencyRouter from "./sub-routers/agency.router";
+import categoryRouter from "./sub-routers/category.router";
+import recentRouter from "./sub-routers/recentChat.router";
 const useRouter = Router();
 useRouter.use("/auth", authRouter);
-useRouter.use("/auth", userRouter);
+useRouter.use("/user", userRouter);
+useRouter.use("/chat", chatRouter);
+useRouter.use("/agency", agencyRouter);
+useRouter.use("/category", categoryRouter);
+useRouter.use("/recent-chats", recentRouter);
 export default useRouter;

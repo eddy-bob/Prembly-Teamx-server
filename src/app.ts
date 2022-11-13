@@ -9,6 +9,7 @@ import cors from "cors";
 import colors from "colors";
 import * as path from "path";
 import database from "./database/database";
+import { socketCon } from "./core/handlers/socketConnection";
 import * as http from "http";
 import { Request, Response, NextFunction } from "express";
 const app: express.Application = express();
@@ -17,6 +18,19 @@ var server = http.createServer(app);
 
 // instantiate database
 database();
+
+// create socket io instance
+const io = require("socket.io")(server, {
+  cors: {
+    origin: ["http://localhost:3000"],
+  },
+});
+
+// pass socket to custom handler
+socketCon.socketConnection(io);
+
+//set io to a global varialbe
+app.set("socketio", io);
 
 app.use(
   cors({

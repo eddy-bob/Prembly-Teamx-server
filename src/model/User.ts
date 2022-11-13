@@ -1,6 +1,7 @@
 import * as bcrypt from "bcrypt";
 import generateJWT from "../api/generateJWT";
 import endPoint from "../config/endpoints.config";
+import { Schema, model } from "mongoose";
 import * as crypto from "crypto";
 
 // import { Point } from "geoJson"
@@ -9,9 +10,10 @@ import * as crypto from "crypto";
 enum UserEnum {
   USER = "USER",
   ADMIN = "ADMIN",
+  SUPER = "SUPER_ADMIN",
+  ASSISTANT = "CUSTOMER_ASSISTANT",
   MODERATOR = "MODERATOR",
 }
-import { Schema, model } from "mongoose";
 
 export interface UserInt {
   first_name: string;
@@ -21,12 +23,11 @@ export interface UserInt {
   country: string;
   state_of_origin: string;
   age: number;
+  email: string;
   password: string;
   resetPasswordToken: string;
   resetPasswordExpire: Date;
-  email: string;
-
-  isLoggedIn: boolean;
+  active: boolean;
   role: string;
   photo: {
     mimeType: String;
@@ -100,7 +101,7 @@ const User = new Schema<UserInt>(
       ],
     },
 
-    isLoggedIn: { type: Boolean, default: false },
+    active: { type: Boolean, default: false },
 
     role: {
       required: true,
@@ -118,8 +119,6 @@ const User = new Schema<UserInt>(
   { timestamps: true }
 );
 
-
-
 User.methods.hashPassword = async function () {
   const saltRounds = endPoint.bycriptHashRound;
   const hashPassword = bcrypt.hashSync(this.password, 10);
@@ -132,17 +131,16 @@ User.methods.genResetPasswordToken = async function () {
   let hashToken;
   var token = crypto.randomBytes(20).toString("hex");
   hashToken = crypto.createHash("sha256").update(token).digest("hex");
-  // set expire=y date
+  // set expiry date
   this.resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000);
   this.resetPasswordToken = hashToken;
   return hashToken;
 };
 
 User.methods.getToken = async function () {
-
   var token = generateJWT({ id: this._id });
 
   return token;
 };
 
-export default model("userMod", User);
+export default model("user", User);

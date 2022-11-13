@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { customError } from "../helpers/customError"
+import  customError  from "../helpers/customError"
 
 interface Authorize extends Request { userRole: string }
 const authorize = ([...roles]: string[]): any => {

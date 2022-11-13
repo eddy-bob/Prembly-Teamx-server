@@ -1,8 +1,7 @@
-
 const cloudinary = require("cloudinary").v2;
 
-import endPoint from "../config/endpoints.config"
-const uploadPhoto = async (photo: Buffer) => {
+import endPoint from "../config/endpoints.config";
+const uploadPhoto: (photo: Buffer) => Promise<any> = async (photo: Buffer) => {
   cloudinary.config({
     cloud_name: endPoint.cloudName,
     api_key: endPoint.cloudApiKey,
@@ -12,10 +11,9 @@ const uploadPhoto = async (photo: Buffer) => {
   try {
     const image = await cloudinary.uploader.upload(photo);
 
-    return image
-  }
-  catch (err) {
-    return err
+    return image;
+  } catch (err) {
+    return err;
   }
 };
 export default uploadPhoto;
