@@ -2371,6 +2371,11 @@ optionator@^0.9.1:
     type-check "^0.4.0"
     word-wrap "^1.2.3"
 
+otp-generator@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/otp-generator/-/otp-generator-2.0.1.tgz#c7bb1e2fd5e030dc18fb84c1076c89efb83376cf"
+  integrity sha512-NqeZDT3DW1ajeS6I0qRJcjvrvTHMkS/bAbmS1KoeWx0t8exuZEva01cRAOheolNZa7IUV86Wl/0msB07eq5Spg==
+
 p-limit@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-3.1.0.tgz#e1daccbe78d0d1388ca18c64fea38e3e57e3706b"
