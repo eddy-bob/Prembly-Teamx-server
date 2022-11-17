@@ -24,8 +24,8 @@ const Otp = new Schema<OtpInt>(
 
 Otp.methods.getOtp = async function () {
   var otp = otpGenerator.generate(5, {
-    alphabets: false,
-    upperCase: false,
+    upperCaseAlphabets: false,
+    lowerCaseAlphabets: false,
     specialChars: false,
   });
   //   epires in 5 minutes
