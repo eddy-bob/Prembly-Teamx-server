@@ -14,7 +14,7 @@ export default function generateJWT(payload: { id: string }) {
     // signature
 
     algorithm: "RS256",
-    expiresIn: "5d",
+    expiresIn: "1h",
   };
 
   const signed = sign(

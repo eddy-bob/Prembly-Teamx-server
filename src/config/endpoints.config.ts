@@ -11,6 +11,10 @@ interface Endpoint {
   cloudName: string;
   cloudinaryUrl: string;
   cloudApiSecret: string;
+  contactAddress: string;
+  mailPassword: string;
+  mailUsername: string;
+  mailerHost: string;
   cloudApiKey: string;
   passPhrase: string;
 }
@@ -29,6 +33,10 @@ const endpoint: Endpoint = {
   cloudinaryUrl: process.env.CLOUDINARY_URL as string,
   cloudApiSecret: process.env.CLOUD_API_SECRET as string,
   cloudApiKey: process.env.CLOUD_API_KEY as string,
+  contactAddress: process.env.MY_CONTACT_ADDRESS as string,
+  mailPassword: process.env.MAIL_PASSWORD as string,
+  mailUsername: process.env.MAIL_USERNAME as string,
+  mailerHost: process.env.NODE_MAILER_HOST as string,
   passPhrase: process.env.PASSPHRASE as string,
 };
 export default endpoint;

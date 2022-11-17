@@ -1,9 +1,12 @@
 import successResponse from "../helpers/success.response";
 import customError from "../helpers/customError";
 import uploadPhoto from "../utils/uploadPhoto";
+import nodemailer from "../utils/nodeMailer";
 import { Response, Request, NextFunction } from "express";
-
 import UserEntity from "../model/User";
+import OtpEntity from "../model/Otp";
+import { ObjectId } from "mongoose";
+import endpoint from "../config/endpoints.config";
 
 interface AuthInterface {
   register: (req: Request, res: Response, next: NextFunction) => Promise<any>;
@@ -13,10 +16,14 @@ interface AuthInterface {
     next: NextFunction
   ) => Promise<any>;
   login: (req: Request, res: Response, next: NextFunction) => Promise<any>;
+  getOtp: (req: Request, res: Response, next: NextFunction) => Promise<any>;
 }
 
 class Auth implements AuthInterface {
-  constructor(private readonly entity: any) {}
+  constructor(
+    private readonly userEntity: any,
+    private readonly otpEntity: any
+  ) {}
 
   public async register(
     req: Request,
@@ -34,13 +41,12 @@ class Auth implements AuthInterface {
       state_of_origin,
       age,
       email,
-      password,
     } = req.body;
     try {
       // upload picture and generate photo url
       const image = await uploadPhoto(photo);
       // create a db instance of the user
-      const data = await this.entity.create({
+      const data = await this.userEntity.create({
         first_name,
         last_name,
         middle_name,
@@ -49,16 +55,13 @@ class Auth implements AuthInterface {
         state_of_origin,
         age,
         email,
-        password,
+
         photo: {
           mimeType: image.format,
           size: image.bytes,
           url: image.secure_url,
         },
       });
-
-      // hashpassword
-      await data.hashPassword();
       await data.save();
 
       successResponse(res, data, 201, "User account created successfully");
@@ -83,13 +86,12 @@ class Auth implements AuthInterface {
       state_of_origin,
       age,
       email,
-      password,
     } = req.body;
     try {
       // upload picture and generate photo url
       const image = await uploadPhoto(photo);
       // create a db instance of the user
-      const data = await this.entity.create({
+      const data = await this.userEntity.create({
         first_name,
         last_name,
         middle_name,
@@ -98,7 +100,7 @@ class Auth implements AuthInterface {
         state_of_origin,
         age,
         email,
-        password,
+
         role: "CUSTOMER_ASSISTANT",
         photo: {
           mimeType: image.format,
@@ -117,6 +119,42 @@ class Auth implements AuthInterface {
     }
   }
 
+  public async getOtp(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> {
+    try {
+      // destructure body
+      const { email } = req.body;
+
+      if (!email) {
+        return next(new customError(" registered email required", 400));
+      }
+      const user = await this.userEntity.findOne({ email });
+      if (!user) {
+        return next(
+          new customError("User information does not exist in  database", 400)
+        );
+      }
+
+      const newOtp = await this.otpEntity.create({ user: user._id });
+      const generatedOtp = newOtp.getOtp();
+
+      //----todo do send otp to email---//
+      await nodemailer(
+        email,
+        endpoint.contactAddress,
+        `here is your OTP: ${generatedOtp}`,
+        "OTP"
+      );
+      // ---------------------------------------//
+      successResponse(res, null, 200, "Otp sent to email");
+    } catch (err: any) {
+      return next(new customError(err.message, 500));
+    }
+  }
+
   public async login(
     req: Request,
     res: Response,
@@ -124,40 +162,34 @@ class Auth implements AuthInterface {
   ): Promise<any> {
     try {
       // destructure body
-      const { email, password } = req.body;
+      const { otp } = req.body;
 
-      if (!email || !password) {
-        return next(new customError("Email and Password required", 400));
+      if (!otp) {
+        return next(new customError("Otp required", 400));
       }
-      const user = await this.entity.findOne({ email }).select("+password");
-      if (!user) {
-        return next(
-          new customError(
-            "User information does not exist in our database",
-            400
-          )
-        );
-      }
-      const isAuth = await user.comparePassword(password);
+      const isOtp = await this.otpEntity
+        .findOne({
+          otp,
+          $gt: { expires: new Date(Date.now()) },
+        })
+        .select(otp);
 
-      if (isAuth == true) {
-        const authUser = await this.entity.findByIdAndUpdate(
-          user._id,
-          { $set: { active: true } },
-          { runValidators: true, new: true }
-        );
-        const token = await authUser.getToken();
-
-        successResponse(res, authUser, 200, "Signin successful", token);
-      } else {
-        return next(
-          new customError("Sorry Email and Password did not work", 401)
-        );
+      if (!isOtp) {
+        return next(new customError("Otp expired or does not exist", 403));
       }
+
+      const authUser = await this.userEntity.findByIdAndUpdate(
+        isOtp.user,
+        { $set: { active: true } },
+        { runValidators: true, new: true }
+      );
+      const token = await authUser.getToken();
+
+      successResponse(res, authUser, 200, "Signin successful", token);
     } catch (err: any) {
       return next(new customError(err.message, 500));
     }
   }
 }
 
-export default new Auth(UserEntity);
+export default new Auth(UserEntity, OtpEntity);

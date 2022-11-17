@@ -47,7 +47,6 @@ const socketCon = {
         connections[userId as any] = socket.id;
         console.log(connections, userFullName);
         connectedNames[userId as any] = userFullName;
-
         console.log(" socket connected");
         // join private group
         socket.join(userId);
@@ -57,7 +56,6 @@ const socketCon = {
         socket.on(
           "message",
           async (data: {
-            
             recieverId: ObjectId;
             message: string;
             attatchment: string[];

@@ -32,14 +32,9 @@ class User implements UserInterface {
         userRole: string;
       }
 
-      const { userId } = req as customResponse;
+      const { userId, userData } = req as customResponse;
 
-      const user = await this.userEntity.findById(userId);
-      if (user) {
-        successResponse(res, user, 200, "Profile Fetched Successfully");
-      } else {
-        return next(new customError("User account does not exist", 404));
-      }
+      successResponse(res, userData, 200, "Profile Fetched Successfully");
     } catch (err: any) {
       return next(new customError(err.message, 500));
     }

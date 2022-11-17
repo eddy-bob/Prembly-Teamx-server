@@ -24,9 +24,6 @@ export interface UserInt {
   state_of_origin: string;
   age: number;
   email: string;
-  password: string;
-  resetPasswordToken: string;
-  resetPasswordExpire: Date;
   active: boolean;
   role: string;
   photo: {
@@ -34,10 +31,9 @@ export interface UserInt {
     size: String;
     url: String;
   };
-  hashPassword: () => Promise<void>;
+
   getToken: () => Promise<string>;
-  genResetPasswordToken: () => Promise<string>;
-  comparePassword: (oldPassword: string) => Promise<boolean>;
+  matchOtp: (oldPassword: string) => Promise<boolean>;
 }
 
 const User = new Schema<UserInt>(
@@ -67,28 +63,17 @@ const User = new Schema<UserInt>(
     country: {
       type: String,
       trim: true,
-      required: [true, "please include a country"],
+      default: "Nigeria",
     },
     age: {
       type: Number,
-      trim: true,
-      required: [true, "please include an age"],
+      trim: true
     },
 
     middle_name: {
       type: String,
       trim: true,
     },
-
-    password: {
-      type: String,
-      select: false,
-      required: [true, "please include a password"],
-      min: [6, "password can not be less than 6 characters"],
-    },
-
-    resetPasswordToken: { type: String, select: false },
-    resetPasswordExpire: { type: Date, select: false },
 
     email: {
       required: [true, "please include an email"],
@@ -118,24 +103,6 @@ const User = new Schema<UserInt>(
   },
   { timestamps: true }
 );
-
-User.methods.hashPassword = async function () {
-  const saltRounds = endPoint.bycriptHashRound;
-  const hashPassword = bcrypt.hashSync(this.password, 10);
-  this.password = hashPassword;
-};
-User.methods.comparePassword = async function (oldPassword: string) {
-  return bcrypt.compareSync(oldPassword, this.password);
-};
-User.methods.genResetPasswordToken = async function () {
-  let hashToken;
-  var token = crypto.randomBytes(20).toString("hex");
-  hashToken = crypto.createHash("sha256").update(token).digest("hex");
-  // set expiry date
-  this.resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000);
-  this.resetPasswordToken = hashToken;
-  return hashToken;
-};
 
 User.methods.getToken = async function () {
   var token = generateJWT({ id: this._id });
