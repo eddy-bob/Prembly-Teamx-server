@@ -1,7 +1,12 @@
-import * as nodemailer from "nodemailer"
+import * as nodemailer from "nodemailer";
 import endpoint from "../config/endpoints.config";
 
-const sendMail = async (reciever: string, sender: string, message: string, subject: any) => {
+const sendMail = async (
+  reciever: string,
+  sender: string,
+  message: string,
+  subject: any
+) => {
   var error;
   const transporter = await nodemailer.createTransport({
     port: 465,
@@ -16,7 +21,7 @@ const sendMail = async (reciever: string, sender: string, message: string, subje
   // send mail with defined transport object
   await transporter.sendMail(
     {
-      from: sender,
+      from: "Teamx",
       to: reciever,
       subject: subject,
 
@@ -25,12 +30,10 @@ const sendMail = async (reciever: string, sender: string, message: string, subje
     },
 
     function (err: any, result: any) {
-
       error = err;
       if (err) {
         error = err;
       } else {
-
       }
     }
   );

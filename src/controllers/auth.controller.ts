@@ -150,7 +150,8 @@ class Auth implements AuthInterface {
       }
 
       const newOtp = await this.otpEntity.create({ user: user._id });
-      const generatedOtp = newOtp.getOtp();
+      const generatedOtp = await newOtp.getOtp();
+    console.log(generatedOtp)
 
       //---send otp to email---//
       await nodemailer(

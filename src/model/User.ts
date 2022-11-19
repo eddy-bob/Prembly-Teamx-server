@@ -34,7 +34,6 @@ export interface UserInt {
   };
 
   getToken: () => Promise<string>;
-  matchOtp: (oldPassword: string) => Promise<boolean>;
 }
 
 const User = new Schema<UserInt>(
