@@ -19,7 +19,8 @@ export interface UserInt {
   first_name: string;
   last_name: string;
   middle_name: string;
-  phone: number;
+  official_phone: number;
+  home_phone: number;
   country: string;
   state_of_origin: string;
   age: number;
@@ -55,10 +56,14 @@ const User = new Schema<UserInt>(
       required: [true, "please include a state of origin"],
     },
 
-    phone: {
+    official_phone: {
       type: Number,
       trim: true,
-      required: [true, "please include a phone number"],
+    },
+    home_phone: {
+      type: Number,
+      trim: true,
+      required: [true, "please include a home phone number"],
     },
     country: {
       type: String,
@@ -67,7 +72,7 @@ const User = new Schema<UserInt>(
     },
     age: {
       type: Number,
-      trim: true
+      trim: true,
     },
 
     middle_name: {

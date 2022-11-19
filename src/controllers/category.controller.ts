@@ -20,7 +20,10 @@ interface CategoryInterface {
 }
 
 class Category implements CategoryInterface {
-  constructor(private readonly CategoryEntity: any) {}
+  constructor(private readonly CategoryEntity: any) {
+    this.createCategory = this.createCategory.bind(this);
+    this.fetchCategories = this.fetchCategories.bind(this);
+  }
 
   public async fetchCategories(
     req: Request,

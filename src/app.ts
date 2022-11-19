@@ -42,6 +42,7 @@ app.use(
 app.use(express.static(path.resolve(__dirname, "/public")));
 app.set("port", endpoints.port);
 app.set("enviroment", endpoints.enviroment);
+app.set("engine", "ejs");
 
 // instantiate colors for use in app
 colors.enable();

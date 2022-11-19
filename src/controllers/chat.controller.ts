@@ -17,7 +17,10 @@ interface ChatInterface {
 }
 
 class Chat implements ChatInterface {
-  constructor(private readonly ChatEntity: any) {}
+  constructor(private readonly ChatEntity: any) {
+    this.fetchChats = this.fetchChats.bind(this);
+    this.addChat = this.addChat.bind(this);
+  }
 
   public async fetchChats(
     req: Request,

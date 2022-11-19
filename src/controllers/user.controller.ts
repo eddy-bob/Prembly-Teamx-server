@@ -18,7 +18,10 @@ interface UserInterface {
 }
 
 class User implements UserInterface {
-  constructor(private readonly userEntity: any) {}
+  constructor(private readonly userEntity: any) {
+    this.fetchOwnProfile = this.fetchOwnProfile.bind(this);
+    this.fetchProfile = this.fetchProfile.bind(this);
+  }
 
   public async fetchOwnProfile(
     req: Request,

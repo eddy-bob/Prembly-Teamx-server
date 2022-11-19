@@ -6,6 +6,7 @@ import { Response, Request, NextFunction } from "express";
 import UserEntity from "../model/User";
 import OtpEntity from "../model/Otp";
 import { ObjectId } from "mongoose";
+import { Model } from "mongoose";
 import endpoint from "../config/endpoints.config";
 
 interface AuthInterface {
@@ -23,7 +24,12 @@ class Auth implements AuthInterface {
   constructor(
     private readonly userEntity: any,
     private readonly otpEntity: any
-  ) {}
+  ) {
+    this.register = this.register.bind(this);
+    this.createAgent = this.createAgent.bind(this);
+    this.login = this.login.bind(this);
+    this.getOtp = this.getOtp.bind(this);
+  }
 
   public async register(
     req: Request,
@@ -36,13 +42,15 @@ class Auth implements AuthInterface {
       first_name,
       last_name,
       middle_name,
-      phone,
+      official_phone,
+      home_phone,
       country,
       state_of_origin,
       age,
       email,
     } = req.body;
     try {
+      
       // upload picture and generate photo url
       const image = await uploadPhoto(photo);
       // create a db instance of the user
@@ -50,7 +58,8 @@ class Auth implements AuthInterface {
         first_name,
         last_name,
         middle_name,
-        phone,
+        official_phone,
+        home_phone,
         country,
         state_of_origin,
         age,
@@ -81,7 +90,8 @@ class Auth implements AuthInterface {
       first_name,
       last_name,
       middle_name,
-      phone,
+      official_phone,
+      home_phone,
       country,
       state_of_origin,
       age,
@@ -95,7 +105,8 @@ class Auth implements AuthInterface {
         first_name,
         last_name,
         middle_name,
-        phone,
+        official_phone,
+        home_phone,
         country,
         state_of_origin,
         age,
@@ -141,7 +152,7 @@ class Auth implements AuthInterface {
       const newOtp = await this.otpEntity.create({ user: user._id });
       const generatedOtp = newOtp.getOtp();
 
-      //----todo do send otp to email---//
+      //---send otp to email---//
       await nodemailer(
         email,
         endpoint.contactAddress,

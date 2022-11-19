@@ -24,7 +24,10 @@ class Agency implements AgencyInterface {
   constructor(
     private readonly AgencyEntity: any,
     private readonly CategoryEntity: any
-  ) {}
+  ) {
+    this.fetchAgencies = this.fetchAgencies.bind(this);
+    this.createAgency = this.createAgency.bind(this);
+  }
 
   public async fetchAgencies(
     req: Request,

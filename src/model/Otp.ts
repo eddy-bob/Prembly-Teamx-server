@@ -23,7 +23,7 @@ const Otp = new Schema<OtpInt>(
 );
 
 Otp.methods.getOtp = async function () {
-  var otp = otpGenerator.generate(5, {
+  var otp = otpGenerator.generate(6, {
     upperCaseAlphabets: false,
     lowerCaseAlphabets: false,
     specialChars: false,

@@ -19,7 +19,10 @@ interface RecentChatInterface {
 }
 
 class RecentChat implements RecentChatInterface {
-  constructor(private readonly RecentChatEntity: any) {}
+  constructor(private readonly RecentChatEntity: any) {
+    this.fetchRecentChats = this.fetchRecentChats.bind(this);
+    this.createRecentChat = this.createRecentChat.bind(this);
+  }
 
   public async createRecentChat(
     req: Request,
