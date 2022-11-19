@@ -36,6 +36,7 @@ class Auth implements AuthInterface {
     res: Response,
     next: NextFunction
   ): Promise<any> {
+    let image;
     // destructure body
     const {
       photo,
@@ -50,9 +51,9 @@ class Auth implements AuthInterface {
       email,
     } = req.body;
     try {
-      
-      // upload picture and generate photo url
-      const image = await uploadPhoto(photo);
+      if (photo) {
+        image = await uploadPhoto(photo,next);
+      }
       // create a db instance of the user
       const data = await this.userEntity.create({
         first_name,
@@ -65,11 +66,12 @@ class Auth implements AuthInterface {
         age,
         email,
 
-        photo: {
-          mimeType: image.format,
-          size: image.bytes,
-          url: image.secure_url,
-        },
+        photo: image &&
+          image.secure_url && {
+            mimeType: image.format,
+            size: image.bytes,
+            url: image.secure_url,
+          },
       });
       await data.save();
 
@@ -84,7 +86,9 @@ class Auth implements AuthInterface {
     res: Response,
     next: NextFunction
   ): Promise<any> {
+    let image;
     // destructure body
+
     const {
       photo,
       first_name,
@@ -99,7 +103,11 @@ class Auth implements AuthInterface {
     } = req.body;
     try {
       // upload picture and generate photo url
-      const image = await uploadPhoto(photo);
+
+      if (photo) {
+        image = await uploadPhoto(photo,next);
+      }
+
       // create a db instance of the user
       const data = await this.userEntity.create({
         first_name,
@@ -111,17 +119,15 @@ class Auth implements AuthInterface {
         state_of_origin,
         age,
         email,
-
         role: "CUSTOMER_ASSISTANT",
-        photo: {
-          mimeType: image.format,
-          size: image.bytes,
-          url: image.secure_url,
-        },
+        photo: image &&
+          image.secure_url && {
+            mimeType: image.format,
+            size: image.bytes,
+            url: image.secure_url,
+          },
       });
 
-      // hashpassword
-      await data.hashPassword();
       await data.save();
 
       successResponse(res, data, 201, "Agent account created successfully");
@@ -151,13 +157,14 @@ class Auth implements AuthInterface {
 
       const newOtp = await this.otpEntity.create({ user: user._id });
       const generatedOtp = await newOtp.getOtp();
-    console.log(generatedOtp)
+      await newOtp.save();
 
       //---send otp to email---//
       await nodemailer(
         email,
         endpoint.contactAddress,
-        `here is your OTP: ${generatedOtp}`,
+        `here is your OTP: ${generatedOtp}.
+        It expires in 5 minutes`,
         "OTP"
       );
       // ---------------------------------------//
@@ -175,16 +182,22 @@ class Auth implements AuthInterface {
     try {
       // destructure body
       const { otp } = req.body;
+      console.log(otp);
 
       if (!otp) {
         return next(new customError("Otp required", 400));
       }
+
+      if (otp < 6) {
+        return next(new customError("Invalid OTP", 400));
+      }
+
       const isOtp = await this.otpEntity
         .findOne({
           otp,
-          $gt: { expires: new Date(Date.now()) },
+          expires: { $gt: new Date(Date.now()) },
         })
-        .select(otp);
+        .select("+otp");
 
       if (!isOtp) {
         return next(new customError("Otp expired or does not exist", 403));
@@ -197,6 +210,8 @@ class Auth implements AuthInterface {
       );
       const token = await authUser.getToken();
 
+      // delete otp record to avoid reuse
+      await this.otpEntity.findOneAndDelete({ _id: isOtp._id });
       successResponse(res, authUser, 200, "Signin successful", token);
     } catch (err: any) {
       return next(new customError(err.message, 500));

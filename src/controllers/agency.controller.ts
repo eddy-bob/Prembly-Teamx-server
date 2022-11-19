@@ -47,6 +47,8 @@ class Agency implements AgencyInterface {
     res: Response,
     next: NextFunction
   ): Promise<any> {
+    let image: any;
+    const {photo}=req.body
     try {
       // look up category
       const isCategory = await this.CategoryEntity.findById(req.body.category);
@@ -54,10 +56,9 @@ class Agency implements AgencyInterface {
         return next(new customError("Category does not exist", 404));
       }
 
-      var image: any;
       // upload picture and generate photo url
-      if (req.body.photo) {
-        image = await uploadPhoto(req.body.photo);
+      if (photo) {
+        image = await uploadPhoto(photo, next);
       }
 
       const Agency = await this.AgencyEntity.create({

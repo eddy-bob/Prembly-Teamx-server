@@ -16,7 +16,7 @@ const Otp = new Schema<OtpInt>(
       ref: "User",
       required: [true, "please provide an object id"],
     },
-    otp: { type: Number, select: false, max: 6, min: 6 },
+    otp: { type: Number, select: false, length: 6 },
     expires: { type: Date },
   },
   { timestamps: true }
@@ -33,7 +33,6 @@ Otp.methods.getOtp = async function () {
   console.log(this.otp, "set otp");
   //   epires in 5 minutes
   this.expires = new Date(Date.now() + 5 * 60 * 1000);
-  console.log(this.expires);
 
   return otp;
 };

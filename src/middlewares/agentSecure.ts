@@ -14,6 +14,7 @@ const agentSecure = async (req: Request, res: Response, next: NextFunction) => {
 
   const token: string = req.headers.api_x_key as string;
   const response =validateXToken(token);
+
   if (response == false) {
     return next(
       new customError("You are not authorized to access this route", 403)
